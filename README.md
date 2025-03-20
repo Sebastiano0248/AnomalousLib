@@ -1,4 +1,4 @@
-# TFG_GEINF
+# TFG_GEINF (anticuat)
 
 ## Resum de la Implementació
 

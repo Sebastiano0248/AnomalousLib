@@ -1,22 +1,63 @@
-# TFG_GEINF (anticuat)
+- Entrar al environment "env"
 
-## Resum de la Implementació
-
-Aquest projecte conté una implementació d'un generador de trajectòries utilitzant mètodes numèrics i estadístics. A continuació es descriuen els components principals:
-
-### trajectoryGenerator.py
-
-Aquest fitxer conté la classe `TrajectoryGenerator`, que s'encarrega de generar i mostrar trajectòries de moviment brownià en 2D. (intentar en un futur que siguin 3D)
-
-#### Principals característiques:
-- **Mètodes de generació**: Utilitza `numpy` o `scipy` per generar els increments de les trajectòries.
-- **Paràmetres configurables**: Nombre de partícules, nombre de passos, interval de temps, sigma, temps inicial i final.
-- **Visualització**: Permet mostrar les trajectòries generades utilitzant `matplotlib`, amb l'opció d'ajustar l'interval d'anotació dels temps.
-
-#### Mètodes:
-- `_generate_trajectories()`: Genera les trajectòries de les partícules.
-- `mostrar()`: Mostra les trajectòries generades en un gràfic interactiu.
-
-### config.py
-
-Aquest fitxer conté les configuracions predeterminades utilitzades per `TrajectoryGenerator`, com el nombre de partícules, nombre de passos, interval de temps, sigma, temps inicial i final.
+```
+project_root/
+│
+├── data/                   # Todos los datos relacionados
+│   ├── raw/                # Datos originales/inmutables (descargados)
+│   ├── generated/          # Datos sintéticos generados
+│   ├── processed/          # Datos transformados/listos para modelar
+│   └── external/           # Datos de terceros/externos
+│
+├── models/                 # Modelos guardados
+│   ├── trained_models/     # Modelos entrenados (pickles u otros formatos)
+│   └── model_configs/      # Configuraciones/parámetros de modelos
+│
+├── results/                # Resultados de análisis y predicciones
+│   ├── reports/            # Reportes estadísticos/analíticos
+│   ├── predictions/        # Resultados de predicciones
+│   └── visualizations/     # Gráficos y visualizaciones
+│
+├── src/                    # Código fuente del proyecto
+│   ├── data/               # Módulo para manejo de datos
+│   │   ├── __init__.py
+│   │   ├── datasets.py     # Clases Dataset, GeneratedDataset, RealDataset
+│   │   └── preprocessing.py# Funciones de preprocesamiento
+│   │
+│   ├── models/             # Módulo para modelos
+│   │   ├── __init__.py
+│   │   ├── base_model.py   # Clase base Model
+│   │   └── specific_models/# Modelos concretos (ej. random_forest.py)
+│   │
+│   ├── analysis/           # Módulo de análisis
+│   │   ├── __init__.py
+│   │   ├── analyzer.py     # Clase DataAnalyzer
+│   │   └── metrics.py      # Funciones de evaluación
+│   │
+│   └── utils/              # Utilidades auxiliares
+│       ├── __init__.py
+│       ├── logger.py       # Sistema de logging
+│       └── helpers.py      # Funciones helper
+│
+├── notebooks/              # Jupyter notebooks de exploración
+│   ├── EDA/                # Análisis exploratorio
+│   └── experiments/        # Experimentos con modelos
+│
+├── tests/                  # Tests unitarios e integración
+│   ├── __init__.py
+│   ├── test_datasets.py
+│   └── test_models.py
+│
+├── config/                 # Configuraciones del proyecto
+│   ├── paths.yaml          # Rutas de archivos/directorios
+│   └── settings.yaml       # Parámetros globales
+│
+├── scripts/                # Scripts ejecutables
+│   ├── train_model.py
+│   └── generate_data.py
+│
+├── requirements.txt        # Dependencias
+├── README.md               # Documentación del proyecto
+├── .gitignore              # Archivos a ignorar en Git
+└── .env                    # Variables de entorno (opcional)
+```

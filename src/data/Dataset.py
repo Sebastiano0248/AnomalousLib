@@ -5,10 +5,11 @@ import os
 
 # Clase base abstracta para todos los datasets
 class Dataset(ABC):
-    def _new_name(self, name: str = None):
+    # TODO: _new_name & change_name s'haurien de poder unificar (?) en un setter de name
+    def _new_name(self, default_name: str = "dataset", name: str = None):
         # Genera un nombre único para el dataset
         counter = 0
-        base_name = name if name else self.default_name
+        base_name = name if name else default_name
         while True:
             potential_name = f"{base_name}{'' if counter == 0 else counter}"
             potential_path = os.path.join(self.path, potential_name)
@@ -16,6 +17,12 @@ class Dataset(ABC):
                 self.name = potential_name
                 break
             counter += 1
+
+    def change_name(self, new_name: str):
+        """Cambia el nombre del dataset"""
+        if not isinstance(new_name, str) or not new_name:
+            raise ValueError("El nombre debe ser una cadena no vacía.")
+        self._new_name(new_name)
     
     def set_path(self, path: str):
         """Establece una nueva ruta para el dataset"""
@@ -24,6 +31,19 @@ class Dataset(ABC):
         if not os.path.exists(path):
             raise NotADirectoryError(f"La ruta especificada no es un directorio válido: {path}")
         self.path = path
+
+    def metadata(self):
+        return {
+            "type": self.type,
+            "num_particules": self.num_particules,
+            "num_passos": self.num_passos
+        }
+
+    def data(self):
+        return {
+            "x": self.x,
+            "y": self.y
+        }
 
     def save(self):
         """Guarda el dataset sempre en format pickle"""

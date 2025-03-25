@@ -61,3 +61,5 @@ project_root/
 ├── .gitignore              # Archivos a ignorar en Git
 └── .env                    # Variables de entorno (opcional)
 ```
+
+pip freeze > requirements.txt

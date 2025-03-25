@@ -1,1 +1,6 @@
-./coses_velles
+/coses_velles/
+/data/
+/env/
+
+# Python cache files
+*.pyc

@@ -47,18 +47,18 @@ class Dataset(ABC):
 
     def save(self):
         """Guarda el dataset sempre en format pickle"""
-        if self.data is None or self.metadata is None:
+        if self.name is None:
             raise ValueError("No se puede guardar un dataset vacío. Asegúrese de que 'data' y 'metadata' no sean None.")
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        with open(self.path, 'wb') as f:
-            pickle.dump({'data': self.data, 'metadata': self.metadata}, f)
+        with open(self.path, 'wb') as f: # self.path + "holaaaaa.hola"?? idk
+            pickle.dump({'data': self.data(), 'metadata': self.metadata()}, f)
 
     def export(self, path: str, format: str = 'csv'):
         """Exporta el dataset a un format especificat"""
         if self.data is None or self.metadata is None:
             raise ValueError("No se puede exportar un dataset vacío. Asegúrese de que 'data' y 'metadata' no sean None.")
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        if format == 'csv' and isinstance(self.data, pd.DataFrame):
+        if format == 'csv' and isinstance(self.data(), pd.DataFrame):
             self.data.to_csv(path, index=False)
         else:
             raise ValueError(f"Formato no soportado: {format}")

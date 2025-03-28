@@ -46,11 +46,18 @@ class Dataset(ABC):
         }
 
     def save(self):
-        """Guarda el dataset sempre en format pickle"""
-        if self.name is None:
-            raise ValueError("No se puede guardar un dataset vacío. Asegúrese de que 'data' y 'metadata' no sean None.")
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        with open(self.path, 'wb') as f: # self.path + "holaaaaa.hola"?? idk
+        """Guarda el dataset en formato pickle con el nombre self.name en el directorio self.path"""
+        if not hasattr(self, 'name') or not self.name:
+            raise ValueError("El dataset debe tener un nombre válido antes de guardarlo.")
+        if not hasattr(self, 'path') or not self.path:
+            raise ValueError("El dataset debe tener una ruta válida antes de guardarlo.")
+        if not os.path.isdir(self.path):
+            raise NotADirectoryError(f"La ruta especificada no es un directorio válido: {self.path}")
+        if os.path.isfile(self.path + f"/{self.name}.pkl"):
+            raise NotADirectoryError(f"La ruta especificada ya existe: {self.path + f"/{self.name}.pkl"}")
+        # os.makedirs(self.path + f"/{self.name}.pkl", exist_ok=True)
+        file_path = os.path.join(self.path, f"{self.name}.pkl")
+        with open(file_path, 'wb') as f:
             pickle.dump({'data': self.data(), 'metadata': self.metadata()}, f)
 
     def export(self, path: str, format: str = 'csv'):

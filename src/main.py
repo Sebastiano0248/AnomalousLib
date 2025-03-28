@@ -1,5 +1,5 @@
 from data.specific_datasets.GeneratedDataset import GeneratedDataset
-from data.specific_datasets.ImportedDataset import ImportedDataset
+from data.specific_datasets.LoadedDataset import LoadedDataset
 from analysis.DataAnalyzer import DataAnalyzer
 
 import os
@@ -43,7 +43,7 @@ def menu_carregar_trajectoria():
                 return
             elif 1 <= opcio <= len(os.listdir(generated_path)):
                 selected_file = os.listdir(generated_path)[opcio - 1]
-                dataset = GeneratedDataset()
+                dataset = LoadedDataset()
                 dataset.load(os.path.join(generated_path, selected_file))
             elif len(os.listdir(generated_path)) < opcio <= len(os.listdir(generated_path)) + len(os.listdir(raw_path)):
                 selected_file = os.listdir(raw_path)[opcio - len(os.listdir(generated_path)) - 1]
@@ -70,6 +70,7 @@ def menu_tipus_trajectoria():
         print()
         print("0. ❌ Tornar enrere")
         opcio = input("Seleccioneu una opció: ")
+        
         
         if opcio == "1":
             dataset = GeneratedDataset()

@@ -19,14 +19,19 @@ class DataAnalyzer:
             except ValueError:
                 new_interval = interval
 
-            for i in range(self.dataset.num_particules):
-                ax.plot(self.dataset.x[i], self.dataset.y[i], label=f'Trajectòria {i+1}')
+            for index, row in self.dataset.iterrows():
+                x, y = row["coords"]
+                ax.plot(x, y, label=f'Trajectòria {index+1}')
                 if new_interval > 0:
-                    for j in range(0, self.dataset.num_passos, new_interval):
-                        ax.text(self.dataset.x[i, j], self.dataset.y[i, j], f'{j}', fontsize=8, color='black')
+                    for j in range(0, len(x), new_interval):
+                        ax.text(x[j], y[j], f'{j}', fontsize=8, color='black')
 
-            ax.scatter(self.dataset.x[:, 0], self.dataset.y[:, 0], color='red', marker='o', label="Inici")
-            ax.scatter(self.dataset.x[:, -1], self.dataset.y[:, -1], color='blue', marker='x', label="Fi")
+            ax.scatter(self.dataset["coords"].apply(lambda c: c[0][0]), 
+                       self.dataset["coords"].apply(lambda c: c[1][0]), 
+                       color='red', marker='o', label="Inici")
+            ax.scatter(self.dataset["coords"].apply(lambda c: c[0][-1]), 
+                       self.dataset["coords"].apply(lambda c: c[1][-1]), 
+                       color='blue', marker='x', label="Fi")
             ax.set_xlabel("X")
             ax.set_ylabel("Y")
             ax.set_title(title)
@@ -41,11 +46,14 @@ class DataAnalyzer:
         plt.show()
     
     def mostrar_evolucio(self):
-        each_range = self.dataset.num_passos // 25
-        distances = {i: [] for i in range(each_range, self.dataset.num_passos+1, each_range)}
-        for i in range(self.dataset.num_particules):
-            for step in range(each_range, self.dataset.num_passos+1, each_range):
-                distance = np.sqrt((self.dataset.x[i, step-1] - self.dataset.x[i, 0])**2 + (self.dataset.y[i, step-1] - self.dataset.y[i, 0])**2)
+        num_passos = len(self.dataset.iloc[0]["coords"][0])
+        each_range = num_passos // 25
+        distances = {i: [] for i in range(each_range, num_passos+1, each_range)}
+        
+        for index, row in self.dataset.iterrows():
+            x, y = row["coords"]
+            for step in range(each_range, num_passos+1, each_range):
+                distance = np.sqrt((x[step-1] - x[0])**2 + (y[step-1] - y[0])**2)
                 distances[step].append(distance)
 
         # Calcular les mitjanes de les distàncies
@@ -61,8 +69,8 @@ class DataAnalyzer:
         plt.show()
     
     def mostrar_histograma(self):
-        final_points_x = self.dataset.x[:, -1]
-        final_points_y = self.dataset.y[:, -1]
+        final_points_x = self.dataset["coords"].apply(lambda c: c[0][-1])
+        final_points_y = self.dataset["coords"].apply(lambda c: c[1][-1])
 
         # Crear histogrames en 2D
         hist, x_edges, y_edges = np.histogram2d(final_points_x, final_points_y, bins=[40, 40])

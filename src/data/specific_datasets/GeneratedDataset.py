@@ -43,4 +43,6 @@ class GeneratedDataset(Dataset):
             self.x[:, i] = self.x[:, i - 1] + dx
             self.y[:, i] = self.y[:, i - 1] + dy
         return self.metadata(), self.data()
+    
+    # Anomalous diffussion types: attm, ctrw, fbm, lw, sbm
 

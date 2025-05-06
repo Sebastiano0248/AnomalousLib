@@ -6,3 +6,4 @@
 # Python cache files
 *.pyc
 *.pkl
+*.pth

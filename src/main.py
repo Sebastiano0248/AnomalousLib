@@ -1,274 +1,307 @@
-from data.DatasetGenerator import DatasetGenerator
-from data.specific_datasets.LoadedDataset import LoadedDataset
-from analysis.DataAnalyzer import DataAnalyzer
-
+import customtkinter
+import os
 import pickle
 import json
-import os
+from data.DatasetGenerator import DatasetGenerator
+from analysis.DataAnalyzer import DataAnalyzer
 
-PATH = "./data/"
+class TrajectoriesApp(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("Anàlisi de Trajectòries")
+        
+        # Configurar el directorio de datos
+        self.data_dir = "data/generated"
+        os.makedirs(self.data_dir, exist_ok=True)
+        
+        # Marco principal
+        self.main_frame = customtkinter.CTkFrame(self)
+        self.main_frame.pack(pady=20, padx=20, fill="both", expand=True)
+        
+        self.show_main_menu()
 
-def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    def clear_frame(self, frame=None):
+        frame = frame or self.main_frame
+        for widget in frame.winfo_children():
+            widget.destroy()
 
-def menu_carregar_trajectoria():
-    clear_screen()
-    print("ℹ️ Si us plau, escolliu un dataset de trajectòries:")
-    print()
-    dataset = None
-    data_path = os.path.join(os.getcwd(), "data")
-    
-    while dataset is None:
-        print("📂 Datasets disponibles:")
-        if os.path.exists(data_path):
-            pkl_files = [file for file in os.listdir(data_path) if file.endswith(".pkl")]
-            if pkl_files:
-                for idx, file in enumerate(pkl_files, start=1):
-                    print(f"   {idx}. {file}")
-            else:
-                print("   ⚠️ No hi ha datasets disponibles.")
+    def show_main_menu(self):
+        self.clear_frame()
+        self.title("Menú Principal")
+        
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="🌟 Menú Principal 🌟",
+                                     font=("Arial", 24, "bold"))
+        title.pack(pady=20)
+        
+        btn_style = {"font": ("Arial", 16), "width": 300, "height": 40}
+        
+        customtkinter.CTkButton(self.main_frame, 
+                              text="🚀 Interpretar dataset",
+                              command=self.show_interpret_menu,
+                              **btn_style).pack(pady=10)
+        
+        customtkinter.CTkButton(self.main_frame, 
+                              text="❌ Sortir",
+                              command=self.quit,
+                              **btn_style).pack(pady=10)
+
+    def show_interpret_menu(self):
+        self.clear_frame()
+        self.title("Interpretar Dataset")
+        
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="📂 Opcions de Dataset",
+                                     font=("Arial", 22, "bold"))
+        title.pack(pady=20)
+        
+        btn_style = {"font": ("Arial", 14), "width": 250, "height": 35}
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="✨ Generar nou dataset",
+                              command=self.show_generation_menu,
+                              **btn_style).pack(pady=10)
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="📂 Carregar existent",
+                              command=self.show_load_menu,
+                              **btn_style).pack(pady=10)
+        
+        self.back_button(self.show_main_menu)
+
+    def show_generation_menu(self):
+        self.clear_frame()
+        self.title("Generar Dataset")
+        
+        config = self.load_config()
+        
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="⚙️ Tipus de Trajectòria",
+                                     font=("Arial", 22, "bold"))
+        title.pack(pady=15)
+        
+        # Mostrar configuración actual
+        config_label = customtkinter.CTkLabel(self.main_frame,
+                                            text=f"Configuració actual:\n"
+                                                 f"Partícules: {config['num_particules']} | "
+                                                 f"Passos: {config['num_passos']} | "
+                                                 f"Passos: {config['random_params']}")
+        config_label.pack(pady=10)
+        
+        # Botón de configuración
+        customtkinter.CTkButton(self.main_frame,
+                              text="⚙️ Configurar paràmetres",
+                              command=self.show_config_menu,
+                              width=200).pack(pady=5)
+
+        # Tipos de trayectorias
+        trajectories = [
+            ("🚶 Random Walk", "generate_RandomWalk"),
+            ("📈 Brownian Motion", "generate_BrownianMotion"),
+            ("⏱️ CTRW", "generate_ContinuousTimeRandomWalk"),
+            ("📉 FBM", "generate_FractionalBrownianMotion"),
+            ("🌀 Lévy Walks", "generate_LevyWalks"),
+            ("🔄 ATTM", "generate_AnnealedTransitTimeModel"),
+            ("📏 SBM", "generate_ScaledBrownianMotion")
+        ]
+        
+        for text, method in trajectories:
+            customtkinter.CTkButton(self.main_frame,
+                                  text=text,
+                                  command=lambda m=method: self.generate_dataset(m),
+                                  width=250).pack(pady=3)
+        
+        self.back_button()
+
+    def show_config_menu(self):
+        self.clear_frame()
+        self.title("Configuració")
+        
+        config = self.load_config()
+        
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="⚙️ Configuració de Paràmetres",
+                                     font=("Arial", 22, "bold"))
+        title.pack(pady=20)
+        
+        # Entradas para parámetros
+        input_style = {"font": ("Arial", 14), "width": 200}
+        
+        customtkinter.CTkLabel(self.main_frame, 
+                             text="Nombre de partícules:").pack()
+        self.particles_entry = customtkinter.CTkEntry(self.main_frame, 
+                                                    **input_style)
+        self.particles_entry.insert(0, str(config["num_particules"]))
+        self.particles_entry.pack(pady=5)
+        
+        customtkinter.CTkLabel(self.main_frame, 
+                             text="Nombre de passos:").pack()
+        self.steps_entry = customtkinter.CTkEntry(self.main_frame, 
+                                                **input_style)
+        self.steps_entry.insert(0, str(config["num_passos"]))
+        self.steps_entry.pack(pady=5)
+
+        customtkinter.CTkLabel(self.main_frame, 
+                     text="Paràmetres aleatoris:").pack()
+        self.random_params_var = customtkinter.BooleanVar(value=config["random_params"])
+        self.random_params_checkbox = customtkinter.CTkCheckBox(self.main_frame, 
+                                      text="Activar",
+                                      variable=self.random_params_var)
+        self.random_params_checkbox.pack(pady=5)
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="💾 Guardar Configuració",
+                              command=self.save_config).pack(pady=15)
+        
+        self.back_button()
+
+    def show_load_menu(self):
+        self.clear_frame()
+        self.title("Carregar Dataset")
+        
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="📂 Datasets Disponibles",
+                                     font=("Arial", 22, "bold"))
+        title.pack(pady=20)
+        
+        # Listar archivos .pkl
+        files = [f for f in os.listdir(self.data_dir) if f.endswith(".pkl")]
+        
+        if not files:
+            customtkinter.CTkLabel(self.main_frame, 
+                                 text="No s'han trobat datasets").pack()
         else:
-            print("   ⚠️ La carpeta de dades no existeix.")
+            for idx, filename in enumerate(files, 1):
+                customtkinter.CTkButton(self.main_frame,
+                                      text=f"{idx}. {filename}",
+                                      command=lambda f=filename: self.load_dataset(f),
+                                      width=300).pack(pady=3)
         
-        print()
-        print("0. ❌ Tornar enrere")
-        opcio = input("Seleccioneu una opció: ")
+        self.back_button()
+
+    def show_analysis_menu(self, dataset):
+        self.clear_frame()
+        self.title("Anàlisi")
         
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="📊 Opcions d'Anàlisi",
+                                     font=("Arial", 22, "bold"))
+        title.pack(pady=20)
+        
+        btn_style = {"width": 250, "height": 35}
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="📈 Mostrar Trajectòries",
+                              command=lambda: DataAnalyzer(dataset).mostrar_trajectories(),
+                              **btn_style).pack(pady=5)
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="📉 Evolució Temporal",
+                              command=lambda: DataAnalyzer(dataset).mostrar_evolucio(),
+                              **btn_style).pack(pady=5)
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="📊 Histograma 3D",
+                              command=lambda: DataAnalyzer(dataset).mostrar_histograma(),
+                              **btn_style).pack(pady=5)
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="💾 Guardar Dataset",
+                              command=lambda: self.show_save_menu(dataset),
+                              **btn_style).pack(pady=15)
+        
+        self.back_button()
+
+    def show_save_menu(self, dataset):
+        self.clear_frame()
+        self.title("Guardar Dataset")
+        
+        title = customtkinter.CTkLabel(self.main_frame, 
+                                     text="💾 Guardar Dataset",
+                                     font=("Arial", 22, "bold"))
+        title.pack(pady=20)
+        
+        self.filename_entry = customtkinter.CTkEntry(self.main_frame,
+                                                   width=300,
+                                                   placeholder_text="Nom del fitxer")
+        self.filename_entry.pack(pady=10)
+        
+        customtkinter.CTkButton(self.main_frame,
+                              text="Guardar",
+                              command=lambda: self.save_dataset(dataset),
+                              width=150).pack(pady=10)
+        
+        self.back_button()
+
+    def back_button(self, command=None):
+        customtkinter.CTkButton(self.main_frame,
+                              text="🔙 Tornar",
+                              command=command or self.show_interpret_menu,
+                              width=100).pack(pady=15)
+
+    # Funcionalidades principales
+    
+    def load_config(self):
         try:
-            opcio = int(opcio)
-            if opcio == 0:
-                clear_screen()
-                return
-            elif 1 <= opcio <= len(pkl_files):
-                selected_file = pkl_files[opcio - 1]
-                with open(os.path.join(data_path, selected_file), 'rb') as f:
-                    dataset = pickle.load(f)
-            else:
-                clear_screen()
-                print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-                print()
-        except (ValueError, IndexError):
-            clear_screen()
-            print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-            print()
-    return dataset
+            with open("config/config.json") as f:
+                return json.load(f)
+        except:
+            return {"num_particules": 5, "num_passos": 1000}
 
-def configurar_parametres():
-    num_particules = 5
-    num_passos = 1000
+    def save_config(self):
+        try:
+            config = {
+                "num_particules": int(self.particles_entry.get()),
+                "num_passos": int(self.steps_entry.get()),
+                "random_params": int(self.random_params_checkbox.get())
+            }
+            os.makedirs("config", exist_ok=True)
+            with open("config/config.json", "w") as f:
+                json.dump(config, f)
+            self.show_generation_menu()
+        except ValueError:
+            error_label = customtkinter.CTkLabel(self.main_frame, 
+                                               text="⛔ Valors no vàlids!")
+            error_label.pack()
+
+    def generate_dataset(self, method_name):
+        config = self.load_config()
+        generator = DatasetGenerator(config["num_particules"])   
+        try:
+            method = getattr(generator, method_name)
+            dataset = method(num_passos = config["num_passos"], random_params = config["random_params"])
+            self.show_analysis_menu(dataset)
+        except Exception as e:
+            error_label = customtkinter.CTkLabel(self.main_frame, 
+                                               text=f"⛔ Error: {str(e)}")
+            error_label.pack()
+
+    def load_dataset(self, filename):
+        try:
+            with open(os.path.join(self.data_dir, filename), "rb") as f:
+                dataset = pickle.load(f)
+            self.show_analysis_menu(dataset)
+        except Exception as e:
+            error_label = customtkinter.CTkLabel(self.main_frame, 
+                                               text=f"⛔ Error: {str(e)}")
+            error_label.pack()
+
+    def save_dataset(self, dataset):
+        filename = self.filename_entry.get()
+        if not filename.endswith(".pkl"):
+            filename += ".pkl"
+        try:
+            with open(os.path.join(self.data_dir, filename), "wb") as f:
+                pickle.dump(dataset, f)
+            success_label = customtkinter.CTkLabel(self.main_frame, 
+                                                 text="✅ Dataset guardat!")
+            success_label.pack()
+        except Exception as e:
+            error_label = customtkinter.CTkLabel(self.main_frame, 
+                                               text=f"⛔ Error: {str(e)}")
+            error_label.pack()
+
+if __name__ == "__main__":
+    app = TrajectoriesApp()
+    app.mainloop()
     
-    while True:
-        clear_screen()
-        print("⚙️ Submenú de configuració:")
-        print(f"1. 🔢 Quantitat de partícules (actual: {num_particules})")
-        print(f"2. 🔄 Quantitat de passos (actual: {num_passos})")
-        print()
-        print("0. 🔙 Tornar al menú anterior")
-        sub_opcio = input("Seleccioneu una opció: ")
-        
-        if sub_opcio == "1":
-            try:
-                num_particules = int(input("Introduïu la nova quantitat de partícules: "))
-                if num_particules <= 0:
-                    raise ValueError
-            except ValueError:
-                print("⚠️ Valor no vàlid. Si us plau, introduïu un número enter positiu.")
-        elif sub_opcio == "2":
-            try:
-                num_passos = int(input("Introduïu la nova quantitat de passos: "))
-                if num_passos <= 0:
-                    raise ValueError
-            except ValueError:
-                print("⚠️ Valor no vàlid. Si us plau, introduïu un número enter positiu.")
-        elif sub_opcio == "0":
-            break
-        else:
-            print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-    return num_particules, num_passos
-
-def guardar_configuracio(num_particules, num_passos):
-    config_path = os.path.join("config", "config.json")
-    config = {
-        "num_particules": num_particules,
-        "num_passos": num_passos
-    }
-    with open(config_path, "w") as config_file:
-        json.dump(config, config_file)
-
-def carregar_configuracio():
-    config_path = os.path.join("config", "config.json")
-    if os.path.exists(config_path):
-        with open(config_path, "r") as config_file:
-            return json.load(config_file)
-    return {"num_particules": 5, "num_passos": 1000}
-
-def menu_tipus_trajectoria():
-    clear_screen()
-    print("ℹ️ Si us plau, configureu els paràmetres de la simulació:")
-    print()
-    
-    config = carregar_configuracio()
-    num_particules, num_passos = config["num_particules"], config["num_passos"]
-    
-    while True:
-        print("⚙️ Configuració actual:")
-        print(f"   🔢 Quantitat de partícules: {num_particules}")
-        print(f"   🔄 Quantitat de passos: {num_passos}")
-        print()
-        print("1. 🚶 Random Walk")
-        print("2. 📈 Trajectòria browniana")
-        print("3. ⏱️ Continuous Time Random Walk")
-        print("4. 📉 Fractional Brownian Motion")
-        print("5. 🌀 Lévy Walks")
-        print("6. 🔄 Annealed Transit Time Model")
-        print("7. 📏 Scaled Brownian Motion")
-        print("8. ⚙️ Configurar paràmetres")
-        print()
-        print("0. ❌ Tornar enrere")
-        opcio = input("Seleccioneu una opció: ")
-        
-        datasetgenerator = DatasetGenerator(num_particules=num_particules, num_passos=num_passos)
-        if opcio == "1":
-            dataset = datasetgenerator.generate_RandomWalk()
-        elif opcio == "2":
-            dataset = datasetgenerator.generate_BrownianMotion()
-        elif opcio == "3":
-            dataset = datasetgenerator.generate_ContinuousTimeRandomWalk()
-        elif opcio == "4":
-            dataset = datasetgenerator.generate_FractionalBrownianMotion()
-        elif opcio == "5":
-            dataset = datasetgenerator.generate_LevyWalks()
-        elif opcio == "6":
-            dataset = datasetgenerator.generate_AnnealedTransitTimeModel()
-        elif opcio == "7":
-            dataset = datasetgenerator.generate_ScaledBrownianMotion()
-        elif opcio == "8":
-            num_particules, num_passos = configurar_parametres()
-            guardar_configuracio(num_particules, num_passos)
-        elif opcio == "0":
-            clear_screen()
-            return
-        else:
-            clear_screen()
-            print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-        
-        if not opcio in ["8", "0"]: return dataset
-
-def menu_interpretar_dataset():
-    clear_screen()
-    print("ℹ️ Primer hem de carregar un dataset.")
-    print()
-    dataset = None
-    while dataset is None:
-        print("1. ✨ Generar trajectòries")
-        print("2. 📂 Carregar trajectòries")
-        print()
-        print("0. ❌ Tornar enrere")
-        opcio = input("Seleccioneu una opció: ")
-        if opcio == "1":
-            dataset = menu_tipus_trajectoria()
-        elif opcio == "2":
-            dataset = menu_carregar_trajectoria()
-        elif opcio == "0":
-            clear_screen()
-            return
-        else:
-            clear_screen()
-            print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-            print()
-    
-    clear_screen()
-    print("ℹ️ Dataset carregat correctament.")
-    print()
-
-    while True:
-        print("🔍 Què vols fer amb el dataset?")
-        print("1. 📊 Anàlisi estadístic")
-        print("2. 🤖 Inferir amb un model de IA")
-        print("3. 💾 Guardar el dataset")
-        print()
-        print("0. ❌ Tornar enrere")
-        opcio = input("Seleccioneu una opció: ")
-        
-        if opcio == "1":
-            statistical_analysis(dataset)
-        elif opcio == "2":
-            print("🤖 Inferint amb un model de IA...")
-            # dataset.infer_with_ai_model()
-        elif opcio == "3":
-            print("💾 Guardant el dataset...")
-            name = input("Introdueix el nom del dataset: ")
-            print(dataset)
-            try:
-                file_path = os.path.join(PATH, f"{name}.pkl")
-                print(file_path)
-                with open(file_path, 'wb') as f:
-                    pickle.dump(dataset, f)
-                print(f"✅ Dataset guardat correctament")
-            except Exception as e:
-                print(f"⚠️ Error en guardar el dataset: {e}")
-        elif opcio == "0":
-            print("❌ Tornant enrere...")
-            break
-        else:
-            print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-
-def statistical_analysis(dataset):
-    clear_screen()
-    print("📊 Anàlisi estadístic")
-    print()
-    while True:
-        print("Seleccioneu una opció:")
-        print("1. Mostrar trajectòries")
-        print("2. Mostrar evolució amb el temps")
-        print("3. Mostrar histograma 3D")
-        print()
-        print("0. ❌ Tornar enrere")
-        
-        opcio = input("Seleccioneu una opció: ")
-        analyser = DataAnalyzer(dataset)
-        if opcio == "1":
-            print("📈 Mostrant trajectòries...")
-            analyser.mostrar_trajectories()
-        elif opcio == "2":
-            print("📉 Mostrant evolució amb el temps...")
-            analyser.mostrar_evolucio()
-        elif opcio == "3":
-            print("📊 Mostrant histograma 3D...")
-            analyser.mostrar_histograma()
-        elif opcio == "0":
-            print("❌ Tornant enrere...")
-            break
-        else:
-            clear_screen()
-            print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-            print()
-
-clear_screen()
-print("🚀 Benvinguts a l'aplicació de trajectòries 🚀")
-print()
-while True:
-    print("🌟 Menú Principal 🌟")
-    print("1. 🚀 Interpretar dataset de trajectòries")
-    # print("2. 🔍 Interpretar trajectòries")
-    # 3. Veure resultats
-    print()
-    print("0. ❌ Sortir")
-    
-    opcio = input("Seleccioneu una opció: ")
-    
-    if opcio == "1":
-        menu_interpretar_dataset()
-    elif opcio == "2":
-        print("🔍 Interpretant trajectòries...")
-        # Lògica per interpretar trajectòries
-    elif opcio == "0":
-        clear_screen()
-        print("❌ Sortint del programa...")
-        break
-    else:
-        clear_screen()
-        print("⚠️ Opció no vàlida. Si us plau, torneu-ho a intentar.")
-        print()
-
-print("👋 Fins aviat! 👋")

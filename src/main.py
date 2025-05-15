@@ -1,12 +1,11 @@
 from data.DatasetGenerator import DatasetGenerator
 from data.specific_datasets.LoadedDataset import LoadedDataset
 from analysis.DataAnalyzer import DataAnalyzer
+from utils.helpers import load_param
 
 import pickle
 import json
 import os
-
-PATH = "./data/"
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -199,8 +198,9 @@ def menu_interpretar_dataset():
             print("💾 Guardant el dataset...")
             name = input("Introdueix el nom del dataset: ")
             print(dataset)
+            path = load_param("path", "dataset>generated")
             try:
-                file_path = os.path.join(PATH, f"{name}.pkl")
+                file_path = os.path.join(path, f"{name}.pkl")
                 print(file_path)
                 with open(file_path, 'wb') as f:
                     pickle.dump(dataset, f)

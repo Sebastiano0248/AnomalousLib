@@ -1,9 +1,7 @@
 /coses_velles/
 /data/
 /env/
-/models/
 
 # Python cache files
 *.pyc
 *.pkl
-*.pth

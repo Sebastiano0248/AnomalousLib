@@ -5,6 +5,14 @@ import inspect
 import torch.nn as nn
 import torch.nn.functional as F
 
+def get_class_def_from_notebook(class_name: str):
+    from IPython import get_ipython
+    shell = get_ipython()
+    for cell in shell.history_manager.get_range():
+        if class_name in cell[2]:
+            return cell[2]
+    return None
+
 def load_model(model_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(model_path, map_location=device, pickle_module=dill)
@@ -20,7 +28,7 @@ def load_model(model_path):
     model.eval()
     return model
 
-def save_model(model_instance, attributes, input_channels, model_name=None, path=None):
+def save_model(model_instance, model_source, attributes, input_channels, model_name=None, path=None):
     if model_name is None:
         model_name = model_instance.__class__.__name__
     filename = f"{model_name}.pth"
@@ -32,7 +40,7 @@ def save_model(model_instance, attributes, input_channels, model_name=None, path
     torch.save({
         "model_name": model_name,
         "model_type": "type_classifier",
-        "model_source": inspect.getsource(model_instance.__class__),
+        "model_source": model_source,
         "state_dict": model_instance.state_dict(),
         "attributes": attributes,
         "input_channels": input_channels

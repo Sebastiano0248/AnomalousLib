@@ -1,9 +1,11 @@
+from data.DatasetGenerator import DatasetGenerator
+from analysis.DataAnalyzer import DataAnalyzer
+from utils.helpers import load_param
+
 import customtkinter
 import os
 import pickle
 import json
-from data.DatasetGenerator import DatasetGenerator
-from analysis.DataAnalyzer import DataAnalyzer
 
 class TrajectoriesApp(customtkinter.CTk):
     def __init__(self):
@@ -11,7 +13,7 @@ class TrajectoriesApp(customtkinter.CTk):
         self.title("Anàlisi de Trajectòries")
         
         # Configurar el directorio de datos
-        self.data_dir = "data/generated"
+        self.data_dir = load_param("path", "dataset>generated")
         os.makedirs(self.data_dir, exist_ok=True)
         
         # Marco principal

@@ -63,3 +63,12 @@ project_root/
 ```
 
 pip freeze > requirements.txt
+
+<!-- para montar el entorno (activar, hacer estos canvios y desactivar):
+Para Linux
+export PYTHONPATH="/ruta/a/tu/proyecto_raiz:$PYTHONPATH"
+
+Para Windows (bat):
+set PYTHONPATH=C:\ruta\a\tu\proyecto_raiz;%PYTHONPATH%
+
+Para Windows (ps1): -->

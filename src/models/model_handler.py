@@ -28,6 +28,10 @@ def load_model(model_path):
     model.eval()
     return model
 
+def load_model_name(model_path):
+    checkpoint = torch.load(model_path, map_location=device, pickle_module=dill)
+    return checkpoint["model_name"]
+
 def save_model(model_instance, model_source, attributes, input_channels, model_name=None, path=None):
     if model_name is None:
         model_name = model_instance.__class__.__name__

@@ -4,6 +4,7 @@ import yaml
 def load_param(paramType: str, keys_str: str):
     yaml_path = Path(f"config/{paramType}s.yaml")
     if not yaml_path.exists():
+        print(f"Directorio actual: {Path.cwd()}")
         raise FileNotFoundError(f"El archivo {yaml_path} no existe.")
 
     try:
@@ -21,10 +22,3 @@ def load_param(paramType: str, keys_str: str):
             return data.get(key, None)  # O cualquier otro comportamiento que desees
         else: data = data.get(key)
     return data
-
-def check_param(param_name, param_value, default_value):
-    import warnings
-    if param_value is None:
-        warnings.warn(f"El parámetro '{param_name}' no ha sido especificado. Usando valor por defecto {default_value}.", UserWarning)
-        return default_value
-    return param_value

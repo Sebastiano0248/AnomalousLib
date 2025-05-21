@@ -1,4 +1,4 @@
-class styles:
+class Styles:
     title_style = {"font": ("Arial", 24, "bold")}
     subtitle_style = {"font": ("Arial", 18)}
     btn_style = {"font": ("Arial", 16), "width": 300, "height": 40}

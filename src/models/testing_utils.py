@@ -1,4 +1,5 @@
 import torch
+import pandas as pd
 
 def evaluate_discrete(model, X_test, y_test):
     model.eval()
@@ -37,7 +38,7 @@ def predict_discrete(model, X_input, y_input=None, le=None, single_example=False
         true_class = torch.argmax(y_input, dim=1).cpu().numpy()
         print("Clase real:", le.inverse_transform(true_class))
 
-def predict_continuous(model, X_input, y_input=None, num_samples=None):
+def predict_continuous(model, X_input, y_input=None, num_samples=None, to_print=True):
     if num_samples is not None:
         X_input = X_input[:num_samples]
         if y_input is not None:
@@ -48,10 +49,19 @@ def predict_continuous(model, X_input, y_input=None, num_samples=None):
         output = model(X_input)
         predicted_value = output.cpu().numpy()
 
-    print("Predicciones:")
-    for i, pred in enumerate(predicted_value):
-        if y_input is not None:
-            true_val = y_input[i].cpu().numpy()
-            print(f"Ejemplo {i+1}: Predicho = {pred[0]}, Real = {true_val}")
-        else:
-            print(f"Ejemplo {i+1}: Predicho = {pred[0]}")
+    results = {'Prediction': predicted_value.flatten()}
+    if y_input is not None:
+        true_values = y_input.cpu().numpy().flatten()
+        results['Real Value'] = true_values
+
+    df = pd.DataFrame(results)
+
+    if to_print:
+        print("Predicciones:")
+        for i, row in df.iterrows():
+            if 'Valor real' in df.columns:
+                print(f"Ejemplo {i+1}: Predicho = {row['Predicción']}, Real = {row['Valor real']}")
+            else:
+                print(f"Ejemplo {i+1}: Predicho = {row['Predicción']}")
+
+    return df

@@ -3,5 +3,13 @@ dataset:
   raw: "./data/raw/"
   generated: "./data/generated/"
 
-model:
-  trained: "./models/trained_models/"
+cache:
+  dataset_generation: "./src/ui/helpers/config.json"
+
+model: "./models/"
+  # trained: "./models/trained_models/"
+
+result:
+  prediction: "./results/predictions/"
+  report: "./results/reports/"
+  visualization: "./results/visualizations/"

@@ -1,9 +1,10 @@
-/coses_velles/
 /data/
 /env/
-/models/
+./src/ui/helpers/config.json
+
+__pycache__/
+*/__pycache__/
+**/__pycache__/
 
 # Python cache files
-*.pyc
 *.pkl
-*.pth

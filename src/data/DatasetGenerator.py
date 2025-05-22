@@ -1,3 +1,5 @@
+from .constants import params
+
 from scipy.stats import levy_stable, pareto
 from fbm import FBM
 import pandas as pd
@@ -40,12 +42,12 @@ class DatasetGenerator:
         return steps_per_particle.tolist(), int(max_num_passos)
 
 
-    def generate_RandomWalk(self, tipus="nonstop", random_params=False, num_passos=100):
+    def generate_RandomWalk(self, tipus=params.rw.default_type, random_params=False, num_passos=100):
         def _chooseMovementsRandomWalk(tipus):
             match tipus:
-                case "nonstop": return [[1, 0], [-1, 0], [0, 1], [0, -1]]
-                case "chill_stop": return [[1, 0], [-1, 0], [0, 1], [0, -1], [0, 0]]
-                case "hard_stop": return [[1, 0], [-1, 0], [0, 1], [0, -1], [0, 0], [0, 0], [0, 0], [0, 0]]
+                case "nonstop": return params.rw.nonstop
+                case "chill_stop": return params.rw.chill_stop
+                case "hard_stop": return params.rw.hard_stop
                 case _: raise ValueError(f"Unknown movement type: {tipus}")
 
         # Decideix el nombre de passos
@@ -90,12 +92,12 @@ class DatasetGenerator:
             num_passos=max_num_passos
         )
     
-    def generate_BrownianMotion(self, generator_type="numpy", delta_t=1, sigma=1, random_params=False, num_passos=100):
+    def generate_BrownianMotion(self, generator_type="numpy", delta_t=params.bm.default_delta_t, sigma=params.bm.default_sigma, random_params=False, num_passos=100):
         steps_per_particle, max_num_passos = self._decide_num_steps(num_passos)
 
         if random_params:
-            delta_t_per_particle = np.random.uniform(0.1, 5.0, self.num_particules)
-            sigma_per_particle = np.random.uniform(0.1, 3.0, self.num_particules)
+            delta_t_per_particle = np.random.uniform(params.bm.min_delta_t, params.bm.max_delta_t, self.num_particules)
+            sigma_per_particle = np.random.uniform(params.bm.min_sigma, params.bm.max_sigma, self.num_particules)
         else:
             delta_t_per_particle = np.full(self.num_particules, delta_t)
             sigma_per_particle = np.full(self.num_particules, sigma)
@@ -126,11 +128,11 @@ class DatasetGenerator:
             max_num_passos
         )
 
-    def generate_FractionalBrownianMotion(self, hurst=0.75, random_params=False, num_passos=100):
+    def generate_FractionalBrownianMotion(self, hurst=params.fbm.default_hurst, random_params=False, num_passos=100):
         steps_per_particle, max_num_passos = self._decide_num_steps(num_passos)
 
         if random_params:
-            hurst_per_particle = np.random.uniform(0.1, 0.9, self.num_particules)
+            hurst_per_particle = np.random.uniform(params.fbm.min_hurst, params.fbm.max_hurst, self.num_particules)
         else:
             hurst_per_particle = np.full(self.num_particules, hurst)
 
@@ -152,11 +154,11 @@ class DatasetGenerator:
             max_num_passos
         )
 
-    def generate_ContinuousTimeRandomWalk(self, alpha=1.2, random_params=False, num_passos=100):
+    def generate_ContinuousTimeRandomWalk(self, alpha=params.ctrw.default_alpha, random_params=False, num_passos=100):
         steps_per_particle, max_num_passos = self._decide_num_steps(num_passos)
 
         if random_params:
-            alpha_per_particle = np.random.uniform(1.1, 2.5, self.num_particules)
+            alpha_per_particle = np.random.uniform(params.ctrw.min_alpha, params.ctrw.max_alpha, self.num_particules)
         else:
             alpha_per_particle = np.full(self.num_particules, alpha)
 
@@ -179,13 +181,13 @@ class DatasetGenerator:
             max_num_passos
         )
 
-    def generate_LevyWalks(self, alpha=1.8, speed=1.0, beta=0.0, random_params=False, num_passos=100):
+    def generate_LevyWalks(self, alpha=params.lw.default_alpha, beta=params.lw.default_beta, speed=params.lw.default_speed, random_params=False, num_passos=100):
         steps_per_particle, max_num_passos = self._decide_num_steps(num_passos)
 
         if random_params:
-            alpha_per_particle = np.clip(np.random.uniform(1.1, 2.0, self.num_particules), 1.1, 2.0)
-            beta_per_particle = np.random.uniform(-1.0, 1.0, self.num_particules)
-            speed_per_particle = np.random.uniform(0.1, 5.0, self.num_particules)
+            alpha_per_particle = np.clip(np.random.uniform(params.lw.min_alpha, params.lw.max_alpha, self.num_particules), 1.1, 2.0)
+            beta_per_particle = np.random.uniform(params.lw.min_beta, params.lw.max_beta, self.num_particules)
+            speed_per_particle = np.random.uniform(params.lw.min_speed, params.lw.max_speed, self.num_particules)
         else:
             alpha_per_particle = np.full(self.num_particules, alpha)
             beta_per_particle = np.full(self.num_particules, beta)
@@ -213,11 +215,11 @@ class DatasetGenerator:
             max_num_passos
         )
 
-    def generate_AnnealedTransitTimeModel(self, gamma_shape=1.5, random_params=False, num_passos=100):
+    def generate_AnnealedTransitTimeModel(self, gamma_shape=params.attm.default_gamma_shape, random_params=False, num_passos=100):
         steps_per_particle, max_num_passos = self._decide_num_steps(num_passos)
 
         if random_params:
-            gamma_shape_per_particle = np.random.uniform(0.5, 5.0, self.num_particules)
+            gamma_shape_per_particle = np.random.uniform(params.attm.min_gamma_shape, params.attm.max_gamma_shape, self.num_particules)
         else:
             gamma_shape_per_particle = np.full(self.num_particules, gamma_shape)
 
@@ -240,11 +242,11 @@ class DatasetGenerator:
             max_num_passos
         )
 
-    def generate_ScaledBrownianMotion(self, beta=1.3, random_params=False, num_passos=100):
+    def generate_ScaledBrownianMotion(self, beta=params.sbm.default_beta, random_params=False, num_passos=100):
         steps_per_particle, max_num_passos = self._decide_num_steps(num_passos)
 
         if random_params:
-            beta_per_particle = np.random.uniform(0.5, 2.0, self.num_particules)
+            beta_per_particle = np.random.uniform(params.sbm.min_beta, params.sbm.max_beta, self.num_particules)
         else:
             beta_per_particle = np.full(self.num_particules, beta)
 

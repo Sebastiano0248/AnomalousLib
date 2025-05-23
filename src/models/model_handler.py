@@ -17,22 +17,24 @@ def load_model(model_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(model_path, map_location=device, pickle_module=dill)
     
-    # Ejecutar el código fuente para recrear la clase
-    exec(checkpoint["model_source"], globals())  # La clase se define en el scope global
+    # Executem el codi font per recrear la clase
+    exec(checkpoint["model_source"], globals())  # La clase es definex a l'escope global
     
-    # Instanciar el modelo con sus argumentos originales
+    # Instanciar el model amb els seus arguments originals
     model_class = globals()[checkpoint["model_source"].split("class ")[1].split("(")[0].strip()]
     model = model_class(**checkpoint["attributes"])
     model.load_state_dict(checkpoint["state_dict"])
     model.to(device)
     model.eval()
+    if checkpoint["le"] is not None:
+        return model, checkpoint["le"]
     return model
 
 def load_model_name(model_path):
     checkpoint = torch.load(model_path, map_location=device, pickle_module=dill)
     return checkpoint["model_name"]
 
-def save_model(model_instance, model_source, attributes, input_channels, model_name=None, path=None):
+def save_model(model_instance, model_source, attributes, input_channels, model_name=None, path=None, le=None):
     if model_name is None:
         model_name = model_instance.__class__.__name__
     filename = f"{model_name}.pth"
@@ -48,6 +50,7 @@ def save_model(model_instance, model_source, attributes, input_channels, model_n
         "state_dict": model_instance.state_dict(),
         "attributes": attributes,
         "input_channels": input_channels
+        , **({"le": le} if le is not None else {})
     }, save_path, pickle_module=dill)
 
 

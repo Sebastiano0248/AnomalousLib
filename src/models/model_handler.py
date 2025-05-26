@@ -26,7 +26,7 @@ def load_model(model_path):
     model.load_state_dict(checkpoint["state_dict"])
     model.to(device)
     model.eval()
-    if checkpoint["le"] is not None:
+    if checkpoint.get("le") is not None:
         return model, checkpoint["le"]
     return model
 

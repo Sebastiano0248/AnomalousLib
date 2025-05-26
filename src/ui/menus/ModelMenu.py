@@ -3,7 +3,7 @@ from src.ui.menus.LoadMenu import LoadMenu
 from src.ui.menus.SaveMenu import SaveMenu
 from src.utils.helpers import load_param
 from src.models.testing_utils import predict_continuous
-from src.data.preprocessing import generate_tensors
+from src.data.preprocessing import generate_regression_tensors, generate_classification_tensors
 from src.utils.load_save_like import load_from_pickle, save_to_csv
 from src.models.model_handler import load_model
 from src.ui.helpers.utils import clear_frame
@@ -99,7 +99,7 @@ class ModelMenu(Menu):
     def show_results(self, model):
         self.model = model
         lentgh = len(self.dataset)
-        x, y = generate_tensors(self.dataset, "hurst")
+        x, y = generate_regression_tensors(self.dataset, "hurst") # de moment!!!!hu!!!!!
         results = predict_continuous(self.model, x, y, to_print=False)
         
         clear_frame()

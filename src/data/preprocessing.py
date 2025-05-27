@@ -37,3 +37,19 @@ def generate_tensors(dataframe, trajectory_type, parm_to_eval: str):
     y_tensor = torch.tensor(labels, dtype=torch.float32).unsqueeze(1)
 
     return X_tensor, y_tensor
+
+def generate_classification_tensors(dataframe, parm_to_eval: str, le = LabelEncoder()):
+    # dataframe = dataframe.drop(columns=['num_steps', 'attributes'])
+    dataframe = dataframe.sample(frac=1).reset_index(drop=True)
+
+    # Tractem les coordenades per aconseguir X_tensor
+    coords_list = [np.stack([row[0], row[1]], axis=1) for row in dataframe['coords']]
+    X = np.array(coords_list)  # Forma (n_samples, seq_length, 2)
+    X_tensor = torch.tensor(X, dtype=torch.float32).permute(0, 2, 1)
+
+    # Tractem les coordenades per aconseguir y_tensor
+    labels = le.fit_transform(dataframe[parm_to_eval])
+    labels_tensor  = torch.tensor(labels, dtype=torch.long)
+    y_tensor = F.one_hot(labels_tensor, num_classes=7).float()
+
+    return X_tensor, y_tensor

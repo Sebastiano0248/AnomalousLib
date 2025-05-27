@@ -1,13 +1,10 @@
-from src.ui.menus.Menu import Menu
-from src.ui.menus.LoadMenu import LoadMenu
-from src.ui.menus.SaveMenu import SaveMenu
+from src.ui.Menu import Menu
 from src.utils.helpers import load_param
 from src.models.testing_utils import predict_continuous
-from src.data.preprocessing import generate_regression_tensors, generate_classification_tensors
+from src.data.preprocessing import generate_tensors
 from src.utils.load_save_like import load_from_pickle, save_to_csv
 from src.models.model_handler import load_model
-from src.ui.helpers.utils import clear_frame
-from src.ui.helpers.constants import Styles
+from src.ui.constants import Styles
 from src.analysis.DataAnalyzer import DataAnalyzer
 
 
@@ -24,27 +21,20 @@ class ModelMenu(Menu):
         self.data_dir = load_param("path", "dataset>generated")
         self.model_dir = load_param("path", "model")
 
-        # Objectes necessaris
-        self.lm = LoadMenu()
-        self.sm = SaveMenu(
-            "resultat",
-            lambda: self.show_results(self.model)
-        )
-
     def show_model_menu(self):
         self.show_dataset_list()
     
     def show_dataset_list(self):
-        self.lm.show_load_menu(
+        self.show_load_menu(
             "dataset", ".pkl",
-            load_param("path", "dataset>generated"),
+            self.data_dir,
             lambda filename: load_from_pickle(self.data_dir, filename),
             self.show_analysis_menu,
             self.back_menu
         )
 
     def show_analysis_menu(self, dataset):
-        clear_frame()
+        self.clear_frame()
         self.app.title("Anàlisi del Dataset")
 
         self.ui.title("🔎 Anàlisi del Dataset")
@@ -63,7 +53,7 @@ class ModelMenu(Menu):
         self.ui.back_button(self.show_dataset_list)
 
     def show_statistical_analysis(self, dataset):
-        clear_frame()
+        self.clear_frame()
         self.app.title("Anàlisi")
 
         self.ui.title("📊 Opcions d'Anàlisi")
@@ -88,21 +78,53 @@ class ModelMenu(Menu):
 
     def show_model_list(self, dataset):
         self.dataset = dataset
-        self.lm.show_load_menu(
+        self.show_load_menu(
             "model", ".pth",
-            load_param("path", "model"),
+            self.model_dir,
             lambda filename: load_model(self.model_dir + filename),
-            self.show_results,
+            self.decide_param,
             lambda: self.show_analysis_menu(self.dataset)
         )
+
+    def decide_param(self, model):
+        self.model = model
+        params = list(self.dataset["attributes"].iloc[0].keys())
+        self.trajectory_type = self.dataset["attributes"].iloc[0]["trajectory_type"]
+        if len(params) > 1:
+            self.clear_frame()
+            self.app.title("Paràmetres del Model")
+            self.ui.title("📊 Paràmetres del Model")
+
+            self.clear_frame()
+            self.ui.title("📊 Paràmetres del Model")
+
+            self.ui.title(
+                text="Selecciona el paràmetre a inferir",
+                style=Styles.subtitle_style,
+                pady=10
+            )
+
+            for param in params:
+                self.param = param
+                self.ui.button(
+                    self.param.capitalize(),
+                    lambda: self.show_results(self.model),
+                    pady=10
+                )
+        else:
+            self.param = params[0]
+            self.show_results(model)
+            return
+
+        self.ui.back_button(lambda: self.show_model_list(self.dataset))
     
     def show_results(self, model):
         self.model = model
         lentgh = len(self.dataset)
-        x, y = generate_regression_tensors(self.dataset, "hurst") # de moment!!!!hu!!!!!
+        x, y = generate_tensors(self.dataset, self.trajectory_type, self.param)
         results = predict_continuous(self.model, x, y, to_print=False)
         
-        clear_frame()
+        self.clear_frame()
         self.ui.title("📋 Resultats de la Inferència")
         if lentgh > 10:
             self.ui.title(
@@ -119,12 +141,14 @@ class ModelMenu(Menu):
         self.ui.button(
             text="💾 Guardar Resultats",
             command=
-                lambda: self.sm.show_save_menu(
+                lambda: self.show_save_menu(
+                    "resultat",
                     lambda filename: save_to_csv(
                         results,
                         load_param("path", "result>prediction"),
                         filename
-                    )
+                    ),
+                    lambda: self.show_results(self.model)
                 ),
             pady=10
         )

@@ -1,10 +1,9 @@
-from src.ui.menus.Menu import Menu
-from src.ui.menus.GenerationMenu import GenerationMenu
-from src.ui.menus.ModelMenu import ModelMenu
-from src.ui.helpers.utils import clear_frame
+from src.ui.Menu import Menu
+from src.ui.specific_menu.GenerationMenu import GenerationMenu
+from src.ui.specific_menu.ModelMenu import ModelMenu
 
 
-class TrajectoriesApp(Menu):
+class MainMenu(Menu):
     def __init__(self):
         super().__init__()
 
@@ -17,7 +16,7 @@ class TrajectoriesApp(Menu):
         self.app.mainloop()
 
     def show_main_menu(self):
-        clear_frame()
+        self.clear_frame()
         self.app.title("Menú Principal")
 
         self.ui.title("🌟 Menú Principal 🌟")
@@ -34,6 +33,6 @@ class TrajectoriesApp(Menu):
         self.ui.button("❌ Sortir", self.app.quit)
 
 if __name__ == "__main__":
-    app = TrajectoriesApp()
+    app = MainMenu()
     app.mainloop()
     

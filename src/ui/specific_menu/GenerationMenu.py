@@ -1,9 +1,7 @@
 from src.utils.helpers import load_param
-from src.ui.helpers.utils import clear_frame
-from src.ui.helpers.constants import Styles
+from src.ui.constants import Styles
 from src.data.DatasetGenerator import DatasetGenerator
-from src.ui.menus.Menu import Menu
-from src.ui.menus.SaveMenu import SaveMenu
+from src.ui.Menu import Menu
 from src.utils.load_save_like import save_to_pickle
 
 import json
@@ -23,11 +21,6 @@ class GenerationMenu(Menu):
         # Variables globals
         self.back_menu = back_menu
 
-        # objectes necessaris
-        self.sm = SaveMenu(
-            "dataset",
-            self.show_generation_menu
-        )
 
     def _load_default_dataset_config(self):
         try:
@@ -38,7 +31,7 @@ class GenerationMenu(Menu):
             return {"num_particules": 5, "num_passos": 1000, "random_params": 0}
 
     def show_generation_menu(self):
-        clear_frame()
+        self.clear_frame()
         self.app.title("Generar Dataset")
 
         self.ui.title("⚙️ Tipus de Trajectòria")
@@ -87,7 +80,7 @@ class GenerationMenu(Menu):
         self.ui.back_button(self.back_menu)
 
     def show_config_menu(self):
-        clear_frame()
+        self.clear_frame()
         self.app.title("Configuració")
         
         self.ui.title("⚙️ Configuració de Paràmetres", pady=20)
@@ -159,8 +152,10 @@ class GenerationMenu(Menu):
                 num_passos = self.default_dataset_config["num_passos"],
                 random_params = self.default_dataset_config["random_params"]
             )
-            self.sm.show_save_menu(
-                lambda name: save_to_pickle(dataset, self.data_dir, name)
+            self.show_save_menu(
+                "dataset",
+                lambda name: save_to_pickle(dataset, self.data_dir, name),
+                self.show_generation_menu
             )
         except Exception as e:
             self.ui.title(

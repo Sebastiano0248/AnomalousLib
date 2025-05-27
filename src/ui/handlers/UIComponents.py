@@ -1,5 +1,5 @@
-from src.ui.helpers.constants import Styles
-from src.ui.menus.App import App
+from src.ui.constants import Styles
+from src.ui.handlers.App import App
 
 from CTkTable import *
 import customtkinter

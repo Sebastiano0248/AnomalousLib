@@ -27,7 +27,7 @@ class ModelMenu(Menu):
     def show_dataset_list(self):
         self.show_load_menu(
             "dataset", ".pkl",
-            load_param("path", "dataset>generated"),
+            self.data_dir,
             lambda filename: load_from_pickle(self.data_dir, filename),
             self.show_analysis_menu,
             self.back_menu
@@ -80,16 +80,48 @@ class ModelMenu(Menu):
         self.dataset = dataset
         self.show_load_menu(
             "model", ".pth",
-            load_param("path", "model"),
+            self.model_dir,
             lambda filename: load_model(self.model_dir + filename),
-            self.show_results,
+            self.decide_param,
             lambda: self.show_analysis_menu(self.dataset)
         )
+
+    def decide_param(self, model):
+        self.model = model
+        self.trajectory_type = self.dataset["trajectory_type"].iloc[0]
+        params = list(self.dataset["attributes"].iloc[0].keys())
+        if len(params) > 1:
+            self.clear_frame()
+            self.app.title("Paràmetres del Model")
+            self.ui.title("📊 Paràmetres del Model")
+
+            self.clear_frame()
+            self.ui.title("📊 Paràmetres del Model")
+
+            self.ui.title(
+                text="Selecciona el paràmetre a inferir",
+                style=Styles.subtitle_style,
+                pady=10
+            )
+
+            for param in params:
+                self.param = param
+                self.ui.button(
+                    self.param.capitalize(),
+                    lambda: self.show_results(self.model),
+                    pady=10
+                )
+        else:
+            self.param = params[0]
+            self.show_results(model)
+            return
+
+        self.ui.back_button(lambda: self.show_model_list(self.dataset))
     
     def show_results(self, model):
         self.model = model
         lentgh = len(self.dataset)
-        x, y = generate_tensors(self.dataset, "hurst")
+        x, y = generate_tensors(self.dataset, self.trajectory_type, self.param)
         results = predict_continuous(self.model, x, y, to_print=False)
         
         self.clear_frame()

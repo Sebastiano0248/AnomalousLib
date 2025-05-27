@@ -37,3 +37,13 @@ class params:
         default_beta = 1.3
         min_beta = 0.5
         max_beta = 2.0
+
+trajectory_types_mapping = {
+    "Random Walk": params.rw,
+    "Brownian Motion": params.bm,
+    "Fractional Brownian Motion": params.fbm,
+    "Continuous Time Random Walk": params.ctrw,
+    "Lévy Walk": params.lw,
+    "Annealed Transient Time Model": params.attm,
+    "Scaled Brownian Motion": params.sbm,
+}

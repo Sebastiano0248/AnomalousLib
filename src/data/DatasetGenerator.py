@@ -173,7 +173,7 @@ class DatasetGenerator:
             y[p, :steps_per_particle[p]] = np.interp(t_norm, times, np.cumsum(np.random.randn(len(times))))
 
         return self._format_data(
-            x, y, "CTRW",
+            x, y, "Continuous Time Random Walk",
             {
                 "alpha": alpha_per_particle.tolist(),
                 "individual_num_steps": steps_per_particle

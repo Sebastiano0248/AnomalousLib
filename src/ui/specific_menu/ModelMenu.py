@@ -88,8 +88,8 @@ class ModelMenu(Menu):
 
     def decide_param(self, model):
         self.model = model
-        self.trajectory_type = self.dataset["trajectory_type"].iloc[0]
         params = list(self.dataset["attributes"].iloc[0].keys())
+        self.trajectory_type = self.dataset["attributes"].iloc[0]["trajectory_type"]
         if len(params) > 1:
             self.clear_frame()
             self.app.title("Paràmetres del Model")

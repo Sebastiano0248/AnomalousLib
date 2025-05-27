@@ -1,4 +1,4 @@
-from src.data.constants import trajectory_types_mapping
+from src.constants import trajectory_types_mapping
 
 import numpy as np
 import torch

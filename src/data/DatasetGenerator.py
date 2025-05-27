@@ -1,4 +1,4 @@
-from .constants import params
+from src.constants import params
 
 from scipy.stats import levy_stable, pareto
 from fbm import FBM
@@ -14,7 +14,7 @@ class DatasetGenerator:
         if num_particules is not None:
             self.num_particules = num_particules
 
-    def _format_data(self, x, y, trajectory_type, attributes, num_passos):
+    def _format_data(self, x, y, attributes, num_passos):
         # Dona format a les dades generades per a les trajectòries
         data = []
         individual_num_steps = attributes.pop("individual_num_steps", [num_passos] * self.num_particules)
@@ -23,7 +23,6 @@ class DatasetGenerator:
             trajectory_data = {
                 "coords": coords,
                 "num_steps": individual_num_steps[i],
-                "trajectory_type": trajectory_type,
                 "attributes": {k: (v[i] if (isinstance(v, (list, np.ndarray)) and len(v) == self.num_particules) else v) for k, v in attributes.items()}
             }
             data.append(trajectory_data)
@@ -84,8 +83,8 @@ class DatasetGenerator:
         # Usem _format_data!
         return self._format_data(
             x, y,
-            trajectory_type="Random Walk",
             attributes={
+                "trajectory_type": "Random Walk",
                 "movement_type": tipus_per_particle,
                 "individual_num_steps": steps_per_particle
             },
@@ -118,8 +117,9 @@ class DatasetGenerator:
                     y[p, i] = y[p, i-1]
 
         return self._format_data(
-            x, y, "Brownian Motion",
+            x, y,
             {
+                "trajectory_type": "Brownian Motion",
                 "generator_type": generator_type,
                 "delta_t": delta_t_per_particle.tolist(),
                 "sigma": sigma_per_particle.tolist(),
@@ -146,8 +146,9 @@ class DatasetGenerator:
             y[p, :steps_per_particle[p]] = fbm_y
 
         return self._format_data(
-            x, y, "Fractional Brownian Motion",
+            x, y,
             {
+                "trajectory_type": "Fractional Brownian Motion",
                 "hurst": hurst_per_particle.tolist(),
                 "individual_num_steps": steps_per_particle
             },
@@ -173,8 +174,9 @@ class DatasetGenerator:
             y[p, :steps_per_particle[p]] = np.interp(t_norm, times, np.cumsum(np.random.randn(len(times))))
 
         return self._format_data(
-            x, y, "Continuous Time Random Walk",
+            x, y,
             {
+                "trajectory_type": "Continuous Time Random Walk",
                 "alpha": alpha_per_particle.tolist(),
                 "individual_num_steps": steps_per_particle
             },
@@ -205,8 +207,9 @@ class DatasetGenerator:
             y[p, :steps_per_particle[p]] = np.cumsum(dy)
 
         return self._format_data(
-            x, y, "Lévy Walk",
+            x, y,
             {
+                "trajectory_type": "Lévy Walk",
                 "alpha": alpha_per_particle.tolist(),
                 "beta": beta_per_particle.tolist(),
                 "speed": speed_per_particle.tolist(),
@@ -234,8 +237,9 @@ class DatasetGenerator:
             y[p, :steps_per_particle[p]] = np.cumsum(dy)
 
         return self._format_data(
-            x, y, "ATTM",
+            x, y,
             {
+                "trajectory_type": "Annealed Transient Time Model",
                 "gamma_shape": gamma_shape_per_particle.tolist(),
                 "individual_num_steps": steps_per_particle
             },
@@ -262,11 +266,11 @@ class DatasetGenerator:
             y[p, :steps_per_particle[p]] = np.cumsum(dy)
 
         return self._format_data(
-            x, y, "Scaled Brownian Motion",
+            x, y,
             {
+                "trajectory_type": "Scaled Brownian Motion",
                 "beta": beta_per_particle.tolist(),
                 "individual_num_steps": steps_per_particle
             },
             max_num_passos
         )
-

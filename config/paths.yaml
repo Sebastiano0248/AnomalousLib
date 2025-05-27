@@ -4,7 +4,7 @@ dataset:
   generated: "./data/generated/"
 
 cache:
-  dataset_generation: "./src/ui/helpers/config.json"
+  dataset_generation: "./cache/config.json"
 
 model: "./models/"
   # trained: "./models/trained_models/"

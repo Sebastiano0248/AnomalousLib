@@ -11,7 +11,7 @@ class DataAnalyzer:
         fig, ax = plt.subplots(figsize=(8, 6))
         plt.subplots_adjust(bottom=0.2)
 
-        def update(val):
+        def update(_=None):
             ax.clear()
             try:
                 new_interval = int(text_box.text)
@@ -37,17 +37,17 @@ class DataAnalyzer:
             ax.legend()
             ax.grid()
             fig.canvas.draw()
-            return fig, ax
 
         if draw:
             ax_textbox = plt.axes([0.2, 0.05, 0.2, 0.075])
             text_box = TextBox(ax_textbox, "Interval", initial=str(interval))
             text_box.on_submit(update)
-            update(None)
+            update()
             plt.show()
         else:
-            update(None)
-            return fig, ax
+            text_box = type("Dummy", (), {"text": str(interval)})()  # Simula un text_box si no usamos GUI
+            update()
+            return plt, fig, ax 
     
     def mostrar_evolucio(self, draw=True):
         num_passos = len(self.dataset.iloc[0]["coords"][0])
@@ -68,10 +68,12 @@ class DataAnalyzer:
         ax.set_xlabel("Punt final (n)")
         ax.set_ylabel("Distància mitjana")
         ax.grid(True)
+
         if draw:
             plt.show()
         else:
-            return fig, ax
+            return plt, fig, ax
+
 
     def mostrar_histograma(self, draw=True):
         final_points_x = self.dataset["coords"].apply(lambda c: c[0][-1])
@@ -105,4 +107,4 @@ class DataAnalyzer:
         if draw:
             plt.show()
         else:
-            return fig, ax
+            return plt, fig, ax

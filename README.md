@@ -1,8 +1,8 @@
 
 Para hacer pruebas en local (des de la raiz del repositorio):
 python -m build
-pip install .\dist\anomalouslib-0.1.0-py3-none-any.whl --force-reinstall
-
+pots fer: pip install .\dist\anomalouslib-0.1.0-py3-none-any.whl --force-reinstall
+però millor: pip install --upgrade .\dist\anomalouslib-0.1.0-py3-none-any.whl
 Para hacer update de los requirements: pip freeze > requirements.txt
 
 No instalar una versión que no sea local a este repositorio (no?)

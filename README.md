@@ -1,4 +1,23 @@
-- Entrar al environment "env"
+
+Para hacer pruebas en local (des de la raiz del repositorio):
+python -m build
+pip install .\dist\anomalouslib-0.1.0-py3-none-any.whl --force-reinstall
+
+Para hacer update de los requirements: pip freeze > requirements.txt
+
+No instalar una versión que no sea local a este repositorio (no?)
+
+Para subirlo: twine upload dist/*
+
+Activate:
+en powershell: .\venv\Scripts\Activate.ps1
+
+deactivate:
+en powershell : deactivate
+
+
+<!-- EXPLICAR ESTO -->
+<!-- - Entrar al environment "env"
 
 ```
 project_root/

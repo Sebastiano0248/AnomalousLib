@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import TextBox
-from mpl_toolkits.mplot3d import Axes3D
 
 # Classe per a l'anàlisi de dades
 class DataAnalyzer:

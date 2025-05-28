@@ -2,7 +2,7 @@ from pathlib import Path
 import yaml
     
 def load_param(paramType: str, keys_str: str):
-    yaml_path = Path(f"config/{paramType}s.yaml")
+    yaml_path = Path(f"../config/{paramType}s.yaml")
     if not yaml_path.exists():
         print(f"Directorio actual: {Path.cwd()}")
         raise FileNotFoundError(f"El archivo {yaml_path} no existe.")

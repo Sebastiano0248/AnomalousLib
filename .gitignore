@@ -1,8 +1,7 @@
-/data/
-/env/
-.vscode/
-
-./src/ui/helpers/config.json
+/venv/
+/.vscode/
+/dist/
+*.egg-info
 
 __pycache__/
 */__pycache__/

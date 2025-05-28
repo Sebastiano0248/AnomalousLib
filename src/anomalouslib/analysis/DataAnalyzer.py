@@ -1,6 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.widgets import TextBox
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Classe per a l'anàlisi de dades
 class DataAnalyzer:

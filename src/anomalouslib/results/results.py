@@ -1,5 +1,5 @@
-import pickle
 from typing import Any
+import pickle
 
 # Clase para gestionar resultados
 class ResultManager:

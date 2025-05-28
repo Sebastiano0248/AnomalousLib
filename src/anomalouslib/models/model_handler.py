@@ -1,9 +1,9 @@
+import torch.nn.functional as F
+import torch.nn as nn
+import inspect
 import torch
 import dill
 import os
-import inspect
-import torch.nn as nn
-import torch.nn.functional as F
 
 def get_class_def_from_notebook(class_name: str):
     from IPython import get_ipython
@@ -34,7 +34,7 @@ def load_model_name(model_path):
     checkpoint = torch.load(model_path, map_location=device, pickle_module=dill)
     return checkpoint["model_name"]
 
-def save_model(model_instance, model_source, attributes, input_channels, model_name=None, path=None, le=None):
+def save_model(model_instance, model_type,  model_source, params, input_channels, model_name=None, path=None, le=None):
     if model_name is None:
         model_name = model_instance.__class__.__name__
     filename = f"{model_name}.pth"
@@ -45,10 +45,10 @@ def save_model(model_instance, model_source, attributes, input_channels, model_n
         save_path = filename
     torch.save({
         "model_name": model_name,
-        "model_type": "type_classifier",
+        "model_type": model_type,
         "model_source": model_source,
         "state_dict": model_instance.state_dict(),
-        "attributes": attributes,
+        "params": params,
         "input_channels": input_channels
         , **({"le": le} if le is not None else {})
     }, save_path, pickle_module=dill)

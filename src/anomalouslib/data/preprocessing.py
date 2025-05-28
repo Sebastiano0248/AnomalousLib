@@ -1,6 +1,7 @@
 from anomalouslib.constants import trajectory_types_mapping
 
 from sklearn.preprocessing import LabelEncoder
+import torch.nn.functional as F
 import numpy as np
 import torch
 
@@ -49,7 +50,7 @@ def generate_classification_tensors(dataframe, parm_to_eval: str, le = LabelEnco
     X_tensor = torch.tensor(X, dtype=torch.float32).permute(0, 2, 1)
 
     # Tractem les coordenades per aconseguir y_tensor
-    labels = le.fit_transform(dataframe[parm_to_eval])
+    labels = le.fit_transform(data["attributes"].apply(lambda x: x["trajectory_type"]))
     labels_tensor  = torch.tensor(labels, dtype=torch.long)
     y_tensor = F.one_hot(labels_tensor, num_classes=7).float()
 

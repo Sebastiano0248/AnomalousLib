@@ -1,5 +1,5 @@
-import torch
 import pandas as pd
+import torch
 
 def evaluate_discrete(model, X_test, y_test):
     model.eval()

@@ -22,7 +22,7 @@ def load_model(model_path):
     
     # Instanciar el model amb els seus arguments originals
     model_class = globals()[checkpoint["model_source"].split("class ")[1].split("(")[0].strip()]
-    model = model_class(**checkpoint["attributes"])
+    model = model_class(**checkpoint["params"])
     model.load_state_dict(checkpoint["state_dict"])
     model.to(device)
     model.eval()

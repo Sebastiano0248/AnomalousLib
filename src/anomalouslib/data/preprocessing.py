@@ -1,5 +1,6 @@
-from src.constants import trajectory_types_mapping
+from anomalouslib.constants import trajectory_types_mapping
 
+from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import torch
 

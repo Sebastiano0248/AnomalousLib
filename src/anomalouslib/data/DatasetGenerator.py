@@ -1,4 +1,4 @@
-from src.constants import params
+from anomalouslib.constants import params
 
 from scipy.stats import levy_stable, pareto
 from fbm import FBM

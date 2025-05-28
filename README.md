@@ -8,6 +8,7 @@ Para hacer update de los requirements: pip freeze > requirements.txt
 No instalar una versión que no sea local a este repositorio (no?)
 
 Para subirlo: twine upload dist/*
+[Link](https://pypi.org/project/AnomalousLib/)
 
 Activate:
 en powershell: .\venv\Scripts\Activate.ps1

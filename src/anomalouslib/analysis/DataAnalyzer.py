@@ -7,7 +7,7 @@ class DataAnalyzer:
     def __init__(self, dataset):
         self.dataset = dataset
     
-    def mostrar_trajectories(self, title="Simulació de Moviment Brownià en 2D", interval=0):
+    def mostrar_trajectories(self, title="Simulació de Moviment Brownià en 2D", interval=0, draw=True):
         fig, ax = plt.subplots(figsize=(8, 6))
         plt.subplots_adjust(bottom=0.2)
 
@@ -37,14 +37,19 @@ class DataAnalyzer:
             ax.legend()
             ax.grid()
             fig.canvas.draw()
-        
-        ax_textbox = plt.axes([0.2, 0.05, 0.2, 0.075])
-        text_box = TextBox(ax_textbox, "Interval", initial=str(interval))
-        text_box.on_submit(update)
-        update(None)
-        plt.show()
+            return fig, ax
+
+        if draw:
+            ax_textbox = plt.axes([0.2, 0.05, 0.2, 0.075])
+            text_box = TextBox(ax_textbox, "Interval", initial=str(interval))
+            text_box.on_submit(update)
+            update(None)
+            plt.show()
+        else:
+            update(None)
+            return fig, ax
     
-    def mostrar_evolucio(self):
+    def mostrar_evolucio(self, draw=True):
         num_passos = len(self.dataset.iloc[0]["coords"][0])
         each_range = num_passos // 25
         distances = {i: [] for i in range(each_range, num_passos+1, each_range)}
@@ -55,55 +60,49 @@ class DataAnalyzer:
                 distance = np.sqrt((x[step-1] - x[0])**2 + (y[step-1] - y[0])**2)
                 distances[step].append(distance)
 
-        # Calcular les mitjanes de les distàncies
         mean_distances = {step: np.mean(distances[step]) for step in distances}
 
-        # Crear el plot
-        plt.figure(figsize=(10, 6))
-        plt.plot([0] + list(mean_distances.keys()), [0] + list(mean_distances.values()), marker='o', linestyle='-', color='b')
-        plt.title("Distància mitjana des del punt (0,0) a diferents punts finals")
-        plt.xlabel("Punt final (n)")
-        plt.ylabel("Distància mitjana")
-        plt.grid(True)
-        plt.show()
-    
-    def mostrar_histograma(self):
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot([0] + list(mean_distances.keys()), [0] + list(mean_distances.values()), marker='o', linestyle='-', color='b')
+        ax.set_title("Distància mitjana des del punt (0,0) a diferents punts finals")
+        ax.set_xlabel("Punt final (n)")
+        ax.set_ylabel("Distància mitjana")
+        ax.grid(True)
+        if draw:
+            plt.show()
+        else:
+            return fig, ax
+
+    def mostrar_histograma(self, draw=True):
         final_points_x = self.dataset["coords"].apply(lambda c: c[0][-1])
         final_points_y = self.dataset["coords"].apply(lambda c: c[1][-1])
 
-        # Crear histogrames en 2D
         hist, x_edges, y_edges = np.histogram2d(final_points_x, final_points_y, bins=[40, 40])
 
-        # Crear el gràfic 3D
         fig = plt.figure(figsize=(10, 7))
         ax = fig.add_subplot(111, projection='3d')
 
-        # Definir coordenades del centre dels bins
         x_pos, y_pos = np.meshgrid(x_edges[:-1] + 0.5, y_edges[:-1] + 0.5)
         x_pos = x_pos.ravel()
         y_pos = y_pos.ravel()
         z_pos = np.zeros_like(x_pos)
 
-        # Alçada de les barres
         dz = hist.ravel()
-
-        # Filtrar les barres amb alçada 0
         non_zero_indices = dz > 0
         x_pos = x_pos[non_zero_indices]
         y_pos = y_pos[non_zero_indices]
         z_pos = z_pos[non_zero_indices]
         dz = dz[non_zero_indices]
 
-        # Ajustar la mida de les barres
-        dx = dy = (x_edges[1] - x_edges[0]) * 0.8  # Ajustar l'amplada de les barres
+        dx = dy = (x_edges[1] - x_edges[0]) * 0.8
 
-        # Gràficar barres 3D
         ax.bar3d(x_pos, y_pos, z_pos, dx, dy, dz, shade=True)
-
-        # Etiquetes
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Quantitat de partícules')
         ax.set_title('Distribució de partícules al final de les trajectòries')
 
-        plt.show()
+        if draw:
+            plt.show()
+        else:
+            return fig, ax

@@ -1,94 +1,97 @@
+# AnomalousLib
 
-Para hacer pruebas en local (des de la raiz del repositorio):
+**AnomalousLib** is a Python library designed for the study of anomalous diffusion.
+
+It supports **dataset generation**, **statistical analysis**, **model inference**, and **integrated result visualization**.
+
+The library is published on [PyPI](https://pypi.org/) under the name [AnomalousLib](https://pypi.org/project/AnomalousLib/) and uses **Python** version 3.12.10.
+
+## Repository Structure
+The following diagram shows the structure of the repository:
+```nginx
+AnomalousLib
+│   # Package builds
+├───dist
+│   # Source code
+├───src
+│   └───anomalouslib
+│       │   # Analytical tools and metrics
+│       ├───analysis
+│       │   # Dataset handling and generation
+│       ├───data
+│       │   # Model definitions and inference
+│       ├───models
+│       │   # Output handling and reporting
+│       ├───results
+│       │   # Utility functions and helpers
+│       └───utils
+│   # QA and testing
+└───tests
+```
+
+## Development Setup
+To test the library locally, follow these steps. All commands should be run from the root of the project, where the ```pyproject.toml``` file is located.
+
+### 1. Set Up the Virtual Environment
+First, create a virtual environment:
+```bash
+python -m venv venv
+```
+Then activate it:
+- On **Linux/macOS**:
+    ```bash
+    source venv/bin/activate
+    ```
+- On **Windows**:
+    ```powershell
+    .\venv\Scripts\Activate.ps1
+    ```
+> **💡 Note:** To deactivate the environment at any time (on both Linux and Windows), use:
+> ```bash
+> deactivate
+> ```
+
+### 2. Install Dependencies
+Install the required libraries listed in ```requirements.txt```:
+```bash
+pip install -r requirements.txt
+```
+To verify the installation, you can regenerate the ```requirements.txt``` and check for any differences:
+- On **Linux/macOS**:
+    ```bash
+    pip freeze | grep -vE "^-e |@ file://" > requirements.txt
+    ```
+- On **Windows**:
+    ```powershell
+    pip freeze | Select-String -NotMatch '^-e |@ file://' > requirements.txt
+    ```
+> **💡 Note:** This filtering step avoids including the local installation of the library itself.
+
+If no changes appear in the file, the setup is correct.
+
+## Local Build & Installation
+### 1. Build the Library
+Generate the distribution packages:
+```bash
 python -m build
-pots fer: pip install .\dist\anomalouslib-0.1.0-py3-none-any.whl --force-reinstall
-però millor: pip install --upgrade .\dist\anomalouslib-0.1.0-py3-none-any.whl
-Para hacer update de los requirements: pip freeze > requirements.txt
-
-No instalar una versión que no sea local a este repositorio (no?)
-
-Para subirlo: twine upload dist/*
-[Link](https://pypi.org/project/AnomalousLib/)
-
-Activate:
-en powershell: .\venv\Scripts\Activate.ps1
-
-deactivate:
-en powershell : deactivate
-
-
-<!-- EXPLICAR ESTO -->
-<!-- - Entrar al environment "env"
-
 ```
-project_root/
-│
-├── data/                   # Todos los datos relacionados
-│   ├── raw/                # Datos originales/inmutables (descargados)
-│   ├── generated/          # Datos sintéticos generados
-│   ├── processed/          # Datos transformados/listos para modelar
-│   └── external/           # Datos de terceros/externos
-│
-├── models/                 # Modelos guardados
-│   ├── trained_models/     # Modelos entrenados (pickles u otros formatos)
-│   └── model_configs/      # Configuraciones/parámetros de modelos
-│
-├── results/                # Resultados de análisis y predicciones
-│   ├── reports/            # Reportes estadísticos/analíticos
-│   ├── predictions/        # Resultados de predicciones
-│   └── visualizations/     # Gráficos y visualizaciones
-│
-├── src/                    # Código fuente del proyecto
-│   ├── data/               # Módulo para manejo de datos
-│   │   ├── __init__.py
-│   │   ├── datasets.py     # Clases Dataset, GeneratedDataset, RealDataset
-│   │   └── preprocessing.py# Funciones de preprocesamiento
-│   │
-│   ├── models/             # Módulo para modelos
-│   │   ├── __init__.py
-│   │   ├── base_model.py   # Clase base Model
-│   │   └── specific_models/# Modelos concretos (ej. random_forest.py)
-│   │
-│   ├── analysis/           # Módulo de análisis
-│   │   ├── __init__.py
-│   │   ├── analyzer.py     # Clase DataAnalyzer
-│   │   └── metrics.py      # Funciones de evaluación
-│   │
-│   └── utils/              # Utilidades auxiliares
-│       ├── __init__.py
-│       ├── logger.py       # Sistema de logging
-│       └── helpers.py      # Funciones helper
-│
-├── notebooks/              # Jupyter notebooks de exploración
-│   ├── EDA/                # Análisis exploratorio
-│   └── experiments/        # Experimentos con modelos
-│
-├── tests/                  # Tests unitarios e integración
-│   ├── __init__.py
-│   ├── test_datasets.py
-│   └── test_models.py
-│
-├── config/                 # Configuraciones del proyecto
-│   ├── paths.yaml          # Rutas de archivos/directorios
-│   └── settings.yaml       # Parámetros globales
-│
-├── scripts/                # Scripts ejecutables
-│   ├── train_model.py
-│   └── generate_data.py
-│
-├── requirements.txt        # Dependencias
-├── README.md               # Documentación del proyecto
-├── .gitignore              # Archivos a ignorar en Git
-└── .env                    # Variables de entorno (opcional)
+### 2. Install the Library Locally
+- **First-time installation** (or to force reinstall):
+    ```bash
+    pip install ./dist/anomalouslib-{lib_version}-py3-none-any.whl --force-reinstall
+    ```
+- **Subsequent updates** (faster and applies only changes):
+    ```bash
+    pip install --upgrade ./dist/anomalouslib-{lib_version}-py3-none-any.whl
+    ```
+> **💡 Note:** Replace  ```{lib_version}``` with the actual library version, e.g.: ```pip install --upgrade ./dist/anomalouslib-0.1.0-py3-none-any.whl```
+
+## Publishing to PyPI
+To publish the package to [PyPI](https://pypi.org/project/AnomalousLib/), run:
+```bash
+twine upload ./dist/*
 ```
 
-pip freeze > requirements.txt
+> **⚠️ Important:** Make sure no version in the ```./dist/``` folder has already been uploaded to PyPI.
 
-<!-- para montar el entorno (activar, hacer estos canvios y desactivar):
-Para Linux
-export PYTHONPATH="/ruta/a/tu/proyecto_raiz:$PYTHONPATH"
-
-Para Windows (bat):
-set PYTHONPATH=C:\ruta\a\tu\proyecto_raiz;%PYTHONPATH%
-
-Para Windows (ps1): -->
+> 💡 It is **strongly recommended** not to install the public PyPI version in the same local environment to avoid confusion with the local development version.

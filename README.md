@@ -4,7 +4,7 @@
 
 It supports **dataset generation**, **statistical analysis**, **model inference**, and **integrated result visualization**.
 
-The library is published on [PyPI](https://pypi.org/) under the name [AnomalousLib](https://pypi.org/project/AnomalousLib/) and uses **Python** version 3.12.10.
+The library is published on [PyPI](https://pypi.org/) under the name [AnomalousLib](https://pypi.org/project/AnomalousLib/) and uses **Python** version 3.12.10 or later.
 
 ## Repository Structure
 The following diagram shows the structure of the repository:

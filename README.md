@@ -94,4 +94,10 @@ twine upload ./dist/*
 
 > **⚠️ Important:** Make sure no version in the ```./dist/``` folder has already been uploaded to PyPI.
 
+
+As stated on the [PyPI page](https://pypi.org/project/AnomalousLib/), to install ```AnomalousLib``` on other environments:
+```bash
+pip install anomalouslib
+```
+
 > 💡 It is **strongly recommended** not to install the public PyPI version in the same local environment to avoid confusion with the local development version.

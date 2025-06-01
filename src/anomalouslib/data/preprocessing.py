@@ -20,7 +20,7 @@ def _min_max_params(trajectory_type, parm_to_eval):
 def min_max_normalize(value, min_value, max_value):
     return (value - min_value) / (max_value - min_value)
 
-def generate_tensors(dataframe, trajectory_type, parm_to_eval: str):
+def generate_regressor_tensors(dataframe, trajectory_type, parm_to_eval: str):
     # Aconseguim un dataframe amb les coordenades i la hurst
     df = dataframe[["coords", "attributes"]].copy()
     df[parm_to_eval] = df["attributes"].apply(lambda x: x[parm_to_eval])

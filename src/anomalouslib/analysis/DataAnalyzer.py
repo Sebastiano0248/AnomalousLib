@@ -7,7 +7,7 @@ class DataAnalyzer:
     def __init__(self, dataset):
         self.dataset = dataset
     
-    def mostrar_trajectories(self, title="Simulació de Moviment Brownià en 2D", interval=0, draw=True):
+    def mostrar_trajectories(self, title="2D Brownian Motion Simulation", interval=0, draw=True):
         fig, ax = plt.subplots(figsize=(8, 6))
         plt.subplots_adjust(bottom=0.2)
 
@@ -20,14 +20,14 @@ class DataAnalyzer:
 
             for index, row in self.dataset.iterrows():
                 x, y = row["coords"]
-                ax.plot(x, y, label=f'Trajectòria {index+1}')
+                ax.plot(x, y, label=f'Trajectory {index+1}')
                 if new_interval > 0:
                     for j in range(0, len(x), new_interval):
                         ax.text(x[j], y[j], f'{j}', fontsize=8, color='black')
 
             ax.scatter(self.dataset["coords"].apply(lambda c: c[0][0]), 
                        self.dataset["coords"].apply(lambda c: c[1][0]), 
-                       color='red', marker='o', label="Inici")
+                       color='red', marker='o', label="Start")
             ax.scatter(self.dataset["coords"].apply(lambda c: c[0][-1]), 
                        self.dataset["coords"].apply(lambda c: c[1][-1]), 
                        color='blue', marker='x', label="Fi")
@@ -64,9 +64,9 @@ class DataAnalyzer:
 
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.plot([0] + list(mean_distances.keys()), [0] + list(mean_distances.values()), marker='o', linestyle='-', color='b')
-        ax.set_title("Distància mitjana des del punt (0,0) a diferents punts finals")
-        ax.set_xlabel("Punt final (n)")
-        ax.set_ylabel("Distància mitjana")
+        ax.set_title("Average distance from point (0,0) to different end points")
+        ax.set_xlabel("End point (n)")
+        ax.set_ylabel("Average distance")
         ax.grid(True)
 
         if draw:

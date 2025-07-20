@@ -31,7 +31,7 @@ def predict_discrete(model, X_input, y_input=None, le=None, single_example=False
         output = model(X_input)
         predicted_class = torch.argmax(output, dim=1).cpu().numpy()
 
-    print("Predicción (índice de clase):", predicted_class)
+    print("Prediction (class index):", predicted_class)
     if le is not None:
         print("Clase predicha:", le.inverse_transform(predicted_class))
     if y_input is not None and le is not None:
@@ -57,11 +57,11 @@ def predict_continuous(model, X_input, y_input=None, num_samples=None, to_print=
     df = pd.DataFrame(results)
 
     if to_print:
-        print("Predicciones:")
+        print("Predictions:")
         for i, row in df.iterrows():
-            if 'Valor real' in df.columns:
-                print(f"Ejemplo {i+1}: Predicho = {row['Predicción']}, Real = {row['Valor real']}")
+            if 'Real Value' in df.columns:
+                print(f"Example {i+1}: Predicted = {row['Prediction']}, Real = {row['Real Value']}")
             else:
-                print(f"Ejemplo {i+1}: Predicho = {row['Predicción']}")
+                print(f"Example {i+1}: Predicted = {row['Prediction']}")
 
     return df

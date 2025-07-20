@@ -17,16 +17,16 @@ def load_model(model_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(model_path, map_location=device, pickle_module=dill)
     
-    # Executem el codi font per recrear la clase
-    exec(checkpoint["model_source"], globals())  # La clase es definex a l'escope global
+    # Ejecutar el código fuente para recrear la clase
+    exec(checkpoint["model_source"], globals())  # La clase se define en el scope global
     
-    # Instanciar el model amb els seus arguments originals
+    # Instanciar el modelo con sus argumentos originales
     model_class = globals()[checkpoint["model_source"].split("class ")[1].split("(")[0].strip()]
     model = model_class(**checkpoint["params"])
     model.load_state_dict(checkpoint["state_dict"])
     model.to(device)
     model.eval()
-    if checkpoint.get("le") is not None:
+    if "le" in checkpoint and checkpoint["le"] is not None:
         return model, checkpoint["le"]
     return model
 
